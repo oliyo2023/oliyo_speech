@@ -1,10 +1,16 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:wegame/controllers/model_controller.dart';
+import 'package:wegame/services/pocketbase_service.dart';
 import 'package:wegame/widgets/conversion_input.dart';
 import 'package:wegame/widgets/conversion_results.dart';
 import 'package:wegame/widgets/model_list.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await PocketBaseService.getInstance();
+  Get.put(ModelController());
   runApp(const MyApp());
   doWhenWindowReady(() {
     final win = appWindow;
@@ -22,11 +28,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      // Use GetMaterialApp for GetX features
       title: '音频转换器',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: const AudioConverterScreen(),
+      home: AudioConverterScreen(),
     );
   }
 }
@@ -51,7 +58,7 @@ class _AudioConverterScreenState extends State<AudioConverterScreen> {
       body: Row(
         children: [
           // Left Column
-          const ModelList(),
+          Expanded(child: ModelList()),
           // Middle Column
           Expanded(
             child: ConversionInput(
