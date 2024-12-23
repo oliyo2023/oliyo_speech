@@ -1,12 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../widgets/conversion_input.dart';
 import '../controllers/model_controller.dart';
 import '../services/pocketbase_service.dart';
 import 'user_balance_widget.dart';
 
 class ModelList extends StatefulWidget {
-  const ModelList({super.key});
+  const ModelList({super.key, required this.onModelSelected});
+
+  final Function(dynamic) onModelSelected;
 
   @override
   State<ModelList> createState() => _ModelListState();
@@ -15,6 +18,7 @@ class ModelList extends StatefulWidget {
 class _ModelListState extends State<ModelList> {
   final ModelController controller = Get.find();
   final ScrollController _scrollController = ScrollController();
+  dynamic _selectedModel;
 
   @override
   void initState() {
@@ -134,7 +138,7 @@ class _ModelListState extends State<ModelList> {
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      // TODO: Implement "Use Sound" functionality
+                                      widget.onModelSelected(model);
                                     },
                                     child: const Text('使用声音'),
                                   ),
