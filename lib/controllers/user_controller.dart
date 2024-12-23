@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import '../services/user_balance_service.dart';
 import '../services/pocketbase_service.dart';
-import '../widgets/status_bar.dart';
 
 class UserController extends GetxController {
   final _balanceService = UserBalanceService(PocketBaseService().pb);

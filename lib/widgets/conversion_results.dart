@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import '../services/pocketbase_service.dart';
-
 class ConversionResults extends StatelessWidget {
   const ConversionResults({
     super.key,
@@ -64,7 +60,10 @@ class ConversionResults extends StatelessWidget {
               ),
             const Text('生成的声音将显示在此处'),
             const SizedBox(height: 8.0),
-            const Text('还没有结果'),
+            const Text(
+              '还没有结果',
+              style: TextStyle(color: Colors.blueGrey),
+            ),
             Expanded(
               child: ListView.separated(
                 itemCount: conversionResults.length,

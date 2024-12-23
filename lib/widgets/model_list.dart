@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../widgets/conversion_input.dart';
 import '../controllers/model_controller.dart';
 import '../services/pocketbase_service.dart';
 import 'user_balance_widget.dart';
@@ -18,7 +17,6 @@ class ModelList extends StatefulWidget {
 class _ModelListState extends State<ModelList> {
   final ModelController controller = Get.find();
   final ScrollController _scrollController = ScrollController();
-  dynamic _selectedModel;
 
   @override
   void initState() {

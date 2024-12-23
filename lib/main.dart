@@ -11,7 +11,6 @@ import 'package:wegame/widgets/conversion_input.dart';
 import 'package:wegame/widgets/conversion_results.dart';
 import 'package:wegame/widgets/model_list.dart';
 import 'package:wegame/widgets/status_bar.dart';
-import 'dart:ui' as ui;
 
 final GlobalKey<StatusBarState> statusBarKey = GlobalKey<StatusBarState>();
 
@@ -115,10 +114,19 @@ class _AudioConverterScreenState extends State<AudioConverterScreen> {
                       onConvertPressed: _handleConvertPressed,
                     ),
                   ),
+                  const VerticalDivider(
+                    width: 20,
+                    thickness: 1,
+                    indent: 20,
+                    endIndent: 0,
+                    color: Color.fromARGB(255, 247, 246, 246), // Grey 400
+                  ),
                   // Right Column
-                  ConversionResults(
-                    conversionResults: _conversionResults,
-                    selectedModel: _selectedModel,
+                  Expanded(
+                    child: ConversionResults(
+                      conversionResults: _conversionResults,
+                      selectedModel: _selectedModel,
+                    ),
                   ),
                 ],
               ),
