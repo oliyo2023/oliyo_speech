@@ -1,17 +1,14 @@
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import '../services/tts_service.dart';
+import '../controllers/conversion_controller.dart';
+import '../controllers/model_controller.dart';
 import '../widgets/conversion_input.dart';
 import '../widgets/model_list.dart';
-import '../controllers/model_controller.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 
 void main() {
   Get.put(ModelController());
+  Get.put(ConversionController());
   runApp(const MyApp());
   doWhenWindowReady(() {
     final win = appWindow;
@@ -53,45 +50,19 @@ class _MyHomePageState extends State<MyHomePage> {
   dynamic _selectedModel;
   final _textController = TextEditingController();
   final List<String> _conversionResults = [];
-  late final AudioPlayer _player;
-
-  @override
-  void initState() {
-    super.initState();
-    _player = AudioPlayer();
-  }
+  final ConversionController _conversionController = Get.find();
 
   @override
   void dispose() {
     _textController.dispose();
-    _player.dispose();
     super.dispose();
   }
 
   Future<void> _handleConvertPressed(double speechRate, double volume) async {
     final text = _textController.text;
     final modelId = _selectedModel?.data['model_id'].toString();
-
-    if (text.isNotEmpty && modelId != null) {
-      // try {
-      final ttsService = TtsService();
-      final response = await ttsService.textToSpeech(
-        text,
-        modelId,
-        speechRate: speechRate,
-        volume: volume,
-      );
-      final bytes = response;
-      final directory = await getApplicationDocumentsDirectory();
-      databaseFactory = databaseFactoryFfi;
-      final file = File('${directory.path}/audio.mp3');
-      print(file.path);
-      await file.writeAsBytes(bytes);
-      await _player.setAudioSource(AudioSource.file(file.path));
-      _player.play();
-    } else {
-      Get.snackbar('警告', '请选择模型并输入文本');
-    }
+    _conversionController.convertTextToSpeech(
+        text, modelId!, speechRate, volume);
   }
 
   void _handleModelSelected(model) {
