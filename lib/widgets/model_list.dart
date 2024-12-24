@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/model_controller.dart';
@@ -94,6 +95,8 @@ class _ModelListState extends State<ModelList> {
                                   .files
                                   .getUrl(model, model.data['avstor'])
                                   .toString(),
+                              imageRenderMethodForWeb:
+                                  ImageRenderMethodForWeb.HttpGet,
                               width: 100,
                               height: 100,
                               fit: BoxFit.cover,
