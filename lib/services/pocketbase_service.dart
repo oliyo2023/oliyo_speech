@@ -24,11 +24,10 @@ class PocketBaseService {
 
   Future<void> _authenticate() async {
     try {
-      // ignore: deprecated_member_use
-      await _pb.admins.authWithPassword(
-        'oliyo@qq.com',
-        'gemini4094',
-      );
+      await _pb.collection('_superusers').authWithPassword(
+            'oliyo@qq.com',
+            'gemini4094',
+          );
       print('PocketBase authenticated successfully.');
     } catch (e) {
       print('PocketBase authentication failed: $e');

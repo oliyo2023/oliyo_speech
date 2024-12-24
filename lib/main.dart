@@ -1,35 +1,26 @@
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:wegame/services/tts_service.dart';
-import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wegame/controllers/model_controller.dart';
-import 'package:wegame/services/pocketbase_service.dart';
-import 'package:wegame/widgets/conversion_input.dart';
-import 'package:wegame/widgets/conversion_results.dart';
-import 'package:wegame/widgets/model_list.dart';
-import 'package:wegame/widgets/status_bar.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import '../services/tts_service.dart';
+import '../widgets/conversion_input.dart';
+import '../widgets/model_list.dart';
+import '../controllers/model_controller.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 
-final GlobalKey<StatusBarState> statusBarKey = GlobalKey<StatusBarState>();
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await PocketBaseService.getInstance();
+void main() {
   Get.put(ModelController());
   runApp(const MyApp());
   doWhenWindowReady(() {
     final win = appWindow;
-    const initialSize = Size(800, 600);
+    const initialSize = Size(1280, 720);
     win.minSize = initialSize;
     win.size = initialSize;
     win.alignment = Alignment.center;
-    win.title = '音频转换器';
+    win.title = "Wegame";
     win.show();
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      win.maximize();
-    }
   });
 }
 
@@ -39,33 +30,71 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: '音频转换器',
+      title: 'wegame',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+        useMaterial3: true,
+      ),
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(),
-      home: const AudioConverterScreen(),
+      home: const MyHomePage(),
     );
   }
 }
 
-final windowButtons = [
-  MinimizeWindowButton(),
-  MaximizeWindowButton(),
-  CloseWindowButton(),
-];
-
-class AudioConverterScreen extends StatefulWidget {
-  const AudioConverterScreen({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<AudioConverterScreen> createState() => _AudioConverterScreenState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _AudioConverterScreenState extends State<AudioConverterScreen> {
-  final List<String> _conversionResults = [];
-  final TextEditingController _textController = TextEditingController();
+class _MyHomePageState extends State<MyHomePage> {
   dynamic _selectedModel;
+  final _textController = TextEditingController();
+  final List<String> _conversionResults = [];
+  late final AudioPlayer _player;
 
-  void _onModelSelected(model) {
+  @override
+  void initState() {
+    super.initState();
+    _player = AudioPlayer();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleConvertPressed(double speechRate, double volume) async {
+    final text = _textController.text;
+    final modelId = _selectedModel?.data['model_id'].toString();
+
+    if (text.isNotEmpty && modelId != null) {
+      // try {
+      final ttsService = TtsService();
+      final response = await ttsService.textToSpeech(
+        text,
+        modelId,
+        speechRate: speechRate,
+        volume: volume,
+      );
+      final bytes = response;
+      final directory = await getApplicationDocumentsDirectory();
+      databaseFactory = databaseFactoryFfi;
+      final file = File('${directory.path}/audio.mp3');
+      print(file.path);
+      await file.writeAsBytes(bytes);
+      await _player.setAudioSource(AudioSource.file(file.path));
+      _player.play();
+    } else {
+      Get.snackbar('警告', '请选择模型并输入文本');
+    }
+  }
+
+  void _handleModelSelected(model) {
     setState(() {
       _selectedModel = model;
     });
@@ -73,92 +102,47 @@ class _AudioConverterScreenState extends State<AudioConverterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WindowBorder(
-      color: Colors.black,
-      width: 1,
-      child: Column(
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(30),
+        child: WindowTitleBarBox(
+          child: Row(
+            children: [
+              Expanded(child: MoveWindow()),
+              const WindowButtons(),
+            ],
+          ),
+        ),
+      ),
+      body: Row(
         children: [
-          WindowTitleBarBox(
-            child: Container(
-              decoration: const BoxDecoration(color: Colors.black),
-              child: Row(
-                children: [
-                  Expanded(child: MoveWindow()),
-                  ...windowButtons,
-                ],
-              ),
-            ),
+          Expanded(
+            child: ModelList(onModelSelected: _handleModelSelected),
           ),
           Expanded(
-            child: Scaffold(
-              appBar: AppBar(
-                title: const Text('音频转换器'),
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                toolbarHeight: 0,
-              ),
-              body: Row(
-                children: [
-                  // Left Column
-                  Expanded(
-                    child: ModelList(
-                      onModelSelected: _onModelSelected,
-                    ),
-                  ),
-                  // Middle Column
-                  Expanded(
-                    child: ConversionInput(
-                      selectedModel: _selectedModel,
-                      conversionResults: _conversionResults,
-                      textController: _textController,
-                      onConvertPressed: _handleConvertPressed,
-                    ),
-                  ),
-                  const VerticalDivider(
-                    width: 20,
-                    thickness: 1,
-                    indent: 20,
-                    endIndent: 0,
-                    color: Color.fromARGB(255, 247, 246, 246), // Grey 400
-                  ),
-                  // Right Column
-                  Expanded(
-                    child: ConversionResults(
-                      conversionResults: _conversionResults,
-                      selectedModel: _selectedModel,
-                    ),
-                  ),
-                ],
-              ),
-              bottomSheet: StatusBar(key: statusBarKey),
+            child: ConversionInput(
+              selectedModel: _selectedModel,
+              conversionResults: _conversionResults,
+              textController: _textController,
+              onConvertPressed: _handleConvertPressed,
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Future<void> _handleConvertPressed(double speechRate, double volume) async {
-    final text = _textController.text;
-    if (text.isNotEmpty) {
-      try {
-        final ttsService = TtsService();
-        final response = await ttsService.textToSpeech(text,
-            speechRate: speechRate, volume: volume);
-        if (response.statusCode == 200) {
-          final bytes = response.data;
-          final directory = await getApplicationDocumentsDirectory();
-          final file = File('${directory.path}/audio.mp3');
-          await file.writeAsBytes(bytes);
-          final player = AudioPlayer();
-          await player.setAudioSource(AudioSource.file(file.path));
-          player.play();
-        } else {
-          Get.snackbar('错误', '无法生成语音');
-        }
-      } catch (e) {
-        Get.snackbar('错误', '发生异常: $e');
-      }
-    }
+class WindowButtons extends StatelessWidget {
+  const WindowButtons({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        MinimizeWindowButton(),
+        MaximizeWindowButton(),
+        CloseWindowButton(),
+      ],
+    );
   }
 }

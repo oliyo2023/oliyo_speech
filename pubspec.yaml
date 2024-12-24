@@ -19,6 +19,8 @@ dependencies:
   just_audio: ^0.9.36
   path_provider: ^2.1.5 # Or a more recent version
   fvm: ^3.2.1
+  sqflite: ^2.4.1
+  sqflite_common_ffi: any
 
 dev_dependencies:
   flutter_test:

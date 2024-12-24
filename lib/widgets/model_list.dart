@@ -17,6 +17,7 @@ class ModelList extends StatefulWidget {
 class _ModelListState extends State<ModelList> {
   final ModelController controller = Get.find();
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _apiKeyController = TextEditingController();
 
   @override
   void initState() {
@@ -28,6 +29,7 @@ class _ModelListState extends State<ModelList> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _apiKeyController.dispose();
     super.dispose();
   }
 
@@ -101,7 +103,7 @@ class _ModelListState extends State<ModelList> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   Text(
                                     model.data['name'].toString(),
@@ -124,18 +126,24 @@ class _ModelListState extends State<ModelList> {
                                   Row(
                                     children: [
                                       const Icon(Icons.task, size: 16),
-                                      Text(model.data['task_count'].toString()),
-                                      const SizedBox(width: 30.0),
+                                      Expanded(
+                                          child: Text(model.data['task_count']
+                                              .toString())),
+                                      const SizedBox(width: 16.0),
                                       const Icon(Icons.thumb_up, size: 16),
-                                      Text(model.data['like_count'].toString()),
-                                      const SizedBox(width: 30.0),
+                                      Expanded(
+                                          child: Text(model.data['like_count']
+                                              .toString())),
+                                      const SizedBox(width: 16.0),
                                       const Icon(Icons.share, size: 16),
-                                      Text(model.data['shared_count']
-                                          .toString()),
+                                      Expanded(
+                                          child: Text(model.data['shared_count']
+                                              .toString())),
                                     ],
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
+                                      setState(() {});
                                       widget.onModelSelected(model);
                                     },
                                     child: const Text('使用声音'),

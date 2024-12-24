@@ -25,26 +25,6 @@ class UserBalanceWidget extends StatelessWidget {
             onPressed: userController.fetchBalance,
             child: const Text('刷新'),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              final balanceText =
-                  '用户余额是 \$${userController.balance.toStringAsFixed(2)}';
-              try {
-                final response = await ttsService.textToSpeech(balanceText);
-                if (response.statusCode == 200) {
-                  final bytes = response.data;
-                  await player.setAudioSource(
-                      AudioSource.uri(Uri.dataFromBytes(bytes)));
-                  player.play();
-                } else {
-                  Get.snackbar('错误', '无法生成语音');
-                }
-              } catch (e) {
-                Get.snackbar('错误', '发生异常: $e');
-              }
-            },
-            child: const Icon(Icons.speaker_phone),
-          ),
         ],
       ),
     );

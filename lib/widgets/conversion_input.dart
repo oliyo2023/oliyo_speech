@@ -5,7 +5,7 @@ import '../services/pocketbase_service.dart';
 class ConversionInput extends StatefulWidget {
   const ConversionInput({
     super.key,
-    this.selectedModel,
+    required this.selectedModel,
     required this.conversionResults,
     required this.textController,
     required this.onConvertPressed,
@@ -32,73 +32,79 @@ class _ConversionInputState extends State<ConversionInput> {
         children: [
           if (widget.selectedModel != null)
             Container(
+              margin: const EdgeInsets.only(bottom: 16.0),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade600),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CachedNetworkImage(
-                      imageUrl: PocketBaseService()
-                          .pb
-                          .files
-                          .getUrl(widget.selectedModel,
-                              widget.selectedModel.data['avstor'])
-                          .toString(),
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                    const SizedBox(width: 8.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            widget.selectedModel.data['name'].toString(),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            widget.selectedModel.data['description']
-                                    ?.toString() ??
-                                '',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                          if ((widget.selectedModel.data['description']
-                                      ?.toString()
-                                      .length ??
-                                  0) >
-                              20)
-                            const Text(
-                              '...',
-                            ),
-                          Row(
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CachedNetworkImage(
+                          imageUrl: PocketBaseService()
+                              .pb
+                              .files
+                              .getUrl(widget.selectedModel,
+                                  widget.selectedModel.data['avstor'])
+                              .toString(),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                        const SizedBox(width: 8.0),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(Icons.task, size: 16),
-                              Text(widget.selectedModel.data['task_count']
-                                  .toString()),
-                              const SizedBox(width: 30.0),
-                              const Icon(Icons.thumb_up, size: 16),
-                              Text(widget.selectedModel.data['like_count']
-                                  .toString()),
-                              const SizedBox(width: 30.0),
-                              const Icon(Icons.share, size: 16),
-                              Text(widget.selectedModel.data['shared_count']
-                                  .toString()),
+                              Text(
+                                widget.selectedModel.data['name'].toString(),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                widget.selectedModel.data['description']
+                                        ?.toString() ??
+                                    '',
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                              if ((widget.selectedModel.data['description']
+                                          ?.toString()
+                                          .length ??
+                                      0) >
+                                  20)
+                                const Text(
+                                  '...',
+                                ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.task, size: 16),
+                                  Text(widget.selectedModel.data['task_count']
+                                      .toString()),
+                                  const SizedBox(width: 30.0),
+                                  const Icon(Icons.thumb_up, size: 16),
+                                  Text(widget.selectedModel.data['like_count']
+                                      .toString()),
+                                  const SizedBox(width: 30.0),
+                                  const Icon(Icons.share, size: 16),
+                                  Text(widget.selectedModel.data['shared_count']
+                                      .toString()),
+                                ],
+                              ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-          const SizedBox(height: 16.0),
           TextField(
             controller: widget.textController,
             maxLines: 10,

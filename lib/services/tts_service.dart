@@ -1,44 +1,43 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:wegame/services/dio_client.dart';
 import 'package:wegame/services/pocketbase_service.dart';
 
 class TtsService {
   final Dio _dio = DioClient().dio;
+  final PocketBaseService _pocketBaseService = PocketBaseService();
 
-  Future<Response> textToSpeech(String text,
+  Future<Uint8List> textToSpeech(String text, String referenceId,
       {double speechRate = 1.0, double volume = 0.5}) async {
-    final apiKey = await _getApiKey();
     try {
+      final apiKeyRecords =
+          await _pocketBaseService.pb.collection('keys').getList(
+                filter: 'platform = "fishaudio"',
+                perPage: 1,
+              );
+      final apiKey = apiKeyRecords.items.first.getStringValue('api_key');
+
       final response = await _dio.post(
         'https://api.fish.audio/v1/tts',
-        options: Options(
-          headers: {'Authorization': 'Bearer $apiKey'},
-          contentType: 'application/json',
-        ),
         data: {
           'text': text,
           'format': 'mp3',
           'speed': speechRate,
-          'volume': volume
+          'volume': volume,
+          'reference_id': referenceId,
         },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $apiKey',
+            'Content-Type': 'application/json',
+          },
+          responseType: ResponseType.bytes,
+        ),
       );
-      return response;
+      return response.data;
     } catch (e) {
       print('Error calling TTS API: $e');
       rethrow;
-    }
-  }
-
-  Future<String> _getApiKey() async {
-    final pocketBaseService = await PocketBaseService.getInstance();
-    final records = await pocketBaseService.pb
-        .collection('keys')
-        .getList(filter: 'platform = "fishaudio"', perPage: 1, skipTotal: true);
-    if (records.items.isNotEmpty) {
-      final apiKeyRecord = records.items.first;
-      return apiKeyRecord.data['api_key'];
-    } else {
-      throw Exception('No API key found');
     }
   }
 }
