@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:wegame/services/user_balance_service.dart';
+import 'package:wegame/utils/euum.dart';
 
 class PocketBaseService {
   PocketBaseService._internal();
@@ -11,7 +13,7 @@ class PocketBaseService {
     return _instance!;
   }
 
-  late final PocketBase _pb = PocketBase('https://8.140.206.248/pocketbase');
+  late final PocketBase _pb = PocketBase(Configure.PB_ENDPOINT);
   late final UserBalanceService userBalanceService = UserBalanceService(_pb);
 
   PocketBase get pb => _pb;
@@ -28,9 +30,13 @@ class PocketBaseService {
             'oliyo@qq.com',
             'gemini4094',
           );
-      print('PocketBase authenticated successfully.');
+      if (kDebugMode) {
+        print('PocketBase authenticated successfully.');
+      }
     } catch (e) {
-      print('PocketBase authentication failed: $e');
+      if (kDebugMode) {
+        print('PocketBase authentication failed: $e');
+      }
       // Handle authentication failure appropriately (e.g., show an error message)
     }
   }
@@ -43,5 +49,17 @@ class PocketBaseService {
           perPage: perPage ?? 15,
         );
     return records.items;
+  }
+
+  Future<String> getApiKeys(String platform) async {
+    var apiKey = "";
+    final records = await pb
+        .collection('keys')
+        .getList(filter: 'platform = "$platform"', perPage: 1, skipTotal: true);
+    if (records.items.isNotEmpty) {
+      final apiKeyRecord = records.items.first;
+      apiKey = apiKeyRecord.data['api_key'];
+    }
+    return apiKey;
   }
 }

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../controllers/conversion_controller.dart';
 import '../controllers/model_controller.dart';
 import '../widgets/conversion_input.dart';
+import '../widgets/conversion_results.dart';
 import '../widgets/model_list.dart';
 
 void main() {
@@ -48,7 +49,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   dynamic _selectedModel;
-  final _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
   final List<String> _conversionResults = [];
   final ConversionController _conversionController = Get.find();
 
@@ -86,18 +87,28 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: ModelList(onModelSelected: _handleModelSelected),
           ),
           Expanded(
-            child: ConversionInput(
-              selectedModel: _selectedModel,
-              conversionResults: _conversionResults,
-              textController: _textController,
-              onConvertPressed: _handleConvertPressed,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                ConversionInput(
+                  selectedModel: _selectedModel,
+                  conversionResults: _conversionResults,
+                  textController: _textController,
+                  onConvertPressed: _handleConvertPressed,
+                ),
+              ],
             ),
           ),
+          ConversionResults(
+            conversionResults: _conversionResults,
+            selectedModel: _selectedModel,
+          )
         ],
       ),
     );

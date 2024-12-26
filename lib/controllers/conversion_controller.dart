@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,7 +28,9 @@ class ConversionController extends GetxController {
         final directory = await getApplicationDocumentsDirectory();
         databaseFactory = databaseFactoryFfi;
         final file = File('${directory.path}/audio.mp3');
-        print(file.path);
+        if (kDebugMode) {
+          print(file.path);
+        }
         await file.writeAsBytes(bytes);
         // await player.setAudioSource(AudioSource.file(file.path));
         // player.play();
@@ -48,8 +51,7 @@ class ConversionController extends GetxController {
         await audioFile.readAsBytes(),
         filename: 'audio.mp3',
       );
-      final record =
-          await pocketBaseService.pb.collection('audio_record').create(
+      await pocketBaseService.pb.collection('audio_record').create(
         body: {
           'content': content,
           'model_id': modelId,

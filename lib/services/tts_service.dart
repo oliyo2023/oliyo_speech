@@ -1,5 +1,5 @@
-import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wegame/services/dio_client.dart';
 import 'package:wegame/services/pocketbase_service.dart';
 
@@ -36,7 +36,9 @@ class TtsService {
       );
       return response.data;
     } catch (e) {
-      print('Error calling TTS API: $e');
+      if (kDebugMode) {
+        print('Error calling TTS API: $e');
+      }
       rethrow;
     }
   }

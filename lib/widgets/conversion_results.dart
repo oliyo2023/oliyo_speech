@@ -17,47 +17,9 @@ class ConversionResults extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (selectedModel != null)
-              Container(
-                margin: const EdgeInsets.only(bottom: 16.0),
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade600),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      selectedModel.data['name'].toString(),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      selectedModel.data['description']?.toString() ?? '',
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                    if ((selectedModel.data['description']?.toString().length ??
-                            0) >
-                        40)
-                      const Text('...'),
-                    const SizedBox(height: 8.0),
-                    Row(
-                      children: [
-                        const Icon(Icons.task, size: 16),
-                        Text(selectedModel.data['task_count'].toString()),
-                        const SizedBox(width: 16.0),
-                        const Icon(Icons.thumb_up, size: 16),
-                        Text(selectedModel.data['like_count'].toString()),
-                        const SizedBox(width: 16.0),
-                        const Icon(Icons.share, size: 16),
-                        Text(selectedModel.data['shared_count'].toString()),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
             const Text('生成的声音将显示在此处'),
             const SizedBox(height: 8.0),
             const Text(
@@ -79,6 +41,13 @@ class ConversionResults extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            TextField(
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                hintText: '输入你的消息...',
               ),
             ),
           ],
