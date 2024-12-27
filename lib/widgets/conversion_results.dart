@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'chat_box.dart';
+import 'content_display.dart';
+import '../controllers/balance_controller.dart';
 
 class ConversionResults extends StatelessWidget {
   const ConversionResults({
@@ -12,42 +16,31 @@ class ConversionResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final balanceController = Get.put(BalanceController());
+
     return SizedBox(
       width: 300,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('生成的声音将显示在此处'),
-            const SizedBox(height: 8.0),
-            const Text(
-              '还没有结果',
-              style: TextStyle(color: Colors.blueGrey),
-            ),
             Expanded(
-              child: ListView.separated(
-                itemCount: conversionResults.length,
-                separatorBuilder: (context, index) => const Divider(),
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('转换结果: ${conversionResults[index]}'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.play_arrow),
-                      onPressed: () {
-                        // TODO: Implement audio playback
-                      },
-                    ),
-                  );
-                },
-              ),
+              flex: 2,
+              child: Obx(() => ContentDisplay(
+                    content: 'DeepSeek Chat的响应内容将显示在这里',
+                    balance: balanceController.isLoading.value
+                        ? '加载中...'
+                        : balanceController.balance.value,
+                  )),
             ),
-            const SizedBox(height: 16.0),
-            TextField(
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                hintText: '输入你的消息...',
+            SizedBox(height: 16),
+            Expanded(
+              flex: 1,
+              child: ChatBox(
+                onSendMessage: (message) async {
+                  await balanceController.fetchBalance();
+                  // TODO: 调用DeepSeek Chat API
+                },
               ),
             ),
           ],
