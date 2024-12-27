@@ -72,8 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
     await _conversionController.convertTextToSpeech(request);
   }
 
-  double _speechRate = 1.0;
-  double _volume = 0.5;
+  final double _speechRate = 1.0;
+  final double _volume = 0.5;
 
   void _handleModelSelected(model) {
     setState(() {

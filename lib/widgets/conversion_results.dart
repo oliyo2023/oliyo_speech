@@ -38,7 +38,7 @@ class ConversionResults extends StatelessWidget {
               flex: 1,
               child: ChatBox(
                 onSendMessage: (message) async {
-                  await balanceController.fetchBalance(context);
+                  await balanceController.fetchBalance();
                 },
               ),
             ),

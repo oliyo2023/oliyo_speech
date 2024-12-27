@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0] - 2024-04-02
+
+### Added
+- 新增GetX Snackbar统一提示功能
+
+### Changed
+- 重构BalanceController移除BuildContext依赖
+- 更新ConversionResults组件适配新接口
+
+### Fixed
+- 修复异步操作中使用BuildContext的问题
+- 解决网络错误提示不一致的问题
+
 ## [1.1.0] - 2024-04-01
 
 ### Added

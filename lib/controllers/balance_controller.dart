@@ -8,9 +8,14 @@ class BalanceController extends GetxController {
   var balance = ''.obs;
   var isLoading = false.obs;
 
-  Future<void> fetchBalance(BuildContext context) async {
+  Future<void> fetchBalance() async {
     if (!await NetworkUtils.checkNetworkConnection()) {
-      NetworkUtils.showNetworkError(context);
+      Get.snackbar(
+        '网络错误',
+        '网络连接不可用，请检查网络设置',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 

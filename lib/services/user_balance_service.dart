@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:wegame/services/dio_client.dart';
 import 'package:dio/dio.dart';
 import 'package:wegame/services/pocketbase_service.dart';
+import 'package:wegame/services/config_service.dart';
 import 'package:wegame/utils/euum.dart';
 
 class UserBalanceService {
@@ -17,19 +17,15 @@ class UserBalanceService {
 
   Future<double> fetchRemoteUserBalance() async {
     var apiKey = await PocketBaseService().getApiKeys(Configure.FISH_AUDIO);
-    if (kDebugMode) {
-      print(apiKey);
-    }
+    ConfigService.log('API Key: $apiKey');
     try {
       final response = await _dio.get(
         Configure.FISH_BALANCE_API_POINT,
         options: Options(headers: {'Authorization': 'Bearer $apiKey'}),
       );
       if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print(
-              'Remote balance fetched successfully: ${response.data['credit']}');
-        }
+        ConfigService.log(
+            'Remote balance fetched successfully: ${response.data['credit']}');
         final credit = response.data['credit'];
         if (credit is double) {
           return credit;
@@ -39,15 +35,11 @@ class UserBalanceService {
           return 0.0;
         }
       } else {
-        if (kDebugMode) {
-          print('Failed to fetch remote balance');
-        }
+        ConfigService.log('Failed to fetch remote balance');
         throw Exception('Failed to fetch remote balance');
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching remote balance: $e');
-      }
+      ConfigService.log('Error fetching remote balance: $e');
       throw Exception('Failed to fetch remote balance');
     }
   }
