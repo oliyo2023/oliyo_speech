@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/conversion_controller.dart';
 import '../controllers/model_controller.dart';
+import '../services/tts_service.dart';
 import '../widgets/conversion_input.dart';
 import '../widgets/conversion_results.dart';
 import '../widgets/model_list.dart';
@@ -59,12 +60,20 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  Future<void> _handleConvertPressed(double speechRate, double volume) async {
+  Future<void> _handleConvertPressed() async {
     final text = _textController.text;
     final modelId = _selectedModel?.data['model_id'].toString();
-    _conversionController.convertTextToSpeech(
-        text, modelId!, speechRate, volume);
+    final request = TtsRequest(
+      text: text,
+      referenceId: modelId!,
+      speechRate: _speechRate,
+      volume: _volume,
+    );
+    await _conversionController.convertTextToSpeech(request);
   }
+
+  double _speechRate = 1.0;
+  double _volume = 0.5;
 
   void _handleModelSelected(model) {
     setState(() {

@@ -1,44 +1,53 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:wegame/services/config_service.dart';
 import 'package:wegame/services/dio_client.dart';
 import 'package:wegame/services/pocketbase_service.dart';
+
+class TtsRequest {
+  final String text;
+  final String referenceId;
+  final double speechRate;
+  final double volume;
+
+  TtsRequest({
+    required this.text,
+    required this.referenceId,
+    this.speechRate = 1.0,
+    this.volume = 0.5,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'text': text,
+        'format': 'mp3',
+        'speed': speechRate,
+        'volume': volume,
+        'reference_id': referenceId,
+      };
+}
 
 class TtsService {
   final Dio _dio = DioClient().dio;
   final PocketBaseService _pocketBaseService = PocketBaseService();
 
-  Future<Uint8List> textToSpeech(String text, String referenceId,
-      {double speechRate = 1.0, double volume = 0.5}) async {
+  Future<Uint8List> textToSpeech(TtsRequest request) async {
     try {
-      final apiKeyRecords =
-          await _pocketBaseService.pb.collection('keys').getList(
-                filter: 'platform = "fishaudio"',
-                perPage: 1,
-              );
-      final apiKey = apiKeyRecords.items.first.getStringValue('api_key');
+      final apiKey = await _pocketBaseService.getApiKeys('fishaudio');
 
       final response = await _dio.post(
-        'https://api.fish.audio/v1/tts',
-        data: {
-          'text': text,
-          'format': 'mp3',
-          'speed': speechRate,
-          'volume': volume,
-          'reference_id': referenceId,
-        },
+        ConfigService.fishAudioApiUrl,
+        data: request.toJson(),
         options: Options(
           headers: {
             'Authorization': 'Bearer $apiKey',
-            'Content-Type': 'application/json',
+            ...ConfigService.defaultHeaders,
           },
           responseType: ResponseType.bytes,
         ),
       );
       return response.data;
     } catch (e) {
-      if (kDebugMode) {
-        print('Error calling TTS API: $e');
-      }
+      ConfigService.log('Error calling TTS API: $e');
       rethrow;
     }
   }

@@ -15,16 +15,10 @@ class ConversionController extends GetxController {
   final player = AudioPlayer();
   final PocketBaseService pocketBaseService = PocketBaseService();
 
-  Future<void> convertTextToSpeech(
-      String text, String modelId, double speechRate, double volume) async {
-    if (text.isNotEmpty && modelId.isNotEmpty) {
+  Future<void> convertTextToSpeech(TtsRequest request) async {
+    if (request.text.isNotEmpty && request.referenceId.isNotEmpty) {
       try {
-        final bytes = await ttsService.textToSpeech(
-          text,
-          modelId,
-          speechRate: speechRate,
-          volume: volume,
-        );
+        final bytes = await ttsService.textToSpeech(request);
         final directory = await getApplicationDocumentsDirectory();
         databaseFactory = databaseFactoryFfi;
         final file = File('${directory.path}/audio.mp3');
@@ -34,7 +28,7 @@ class ConversionController extends GetxController {
         await file.writeAsBytes(bytes);
         // await player.setAudioSource(AudioSource.file(file.path));
         // player.play();
-        await uploadAudio(text, file, modelId);
+        await uploadAudio(request.text, file, request.referenceId);
       } catch (e) {
         Get.snackbar('错误', '发生异常: $e');
       }

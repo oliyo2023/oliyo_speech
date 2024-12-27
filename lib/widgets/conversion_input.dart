@@ -14,7 +14,7 @@ class ConversionInput extends StatefulWidget {
   final dynamic selectedModel;
   final List<String> conversionResults;
   final TextEditingController textController;
-  final Function(double speechRate, double volume) onConvertPressed;
+  final Function() onConvertPressed;
 
   @override
   State<ConversionInput> createState() => _ConversionInputState();
@@ -196,7 +196,7 @@ class _ConversionInputState extends State<ConversionInput> {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () => widget.onConvertPressed(_speechRate, _volume),
+            onPressed: widget.onConvertPressed,
             child: const Text('转换为音频'),
           ),
         ],
