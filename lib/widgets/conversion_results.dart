@@ -38,8 +38,7 @@ class ConversionResults extends StatelessWidget {
               flex: 1,
               child: ChatBox(
                 onSendMessage: (message) async {
-                  await balanceController.fetchBalance();
-                  // TODO: 调用DeepSeek Chat API
+                  await balanceController.fetchBalance(context);
                 },
               ),
             ),

@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 class ChatBox extends StatefulWidget {
   final Function(String) onSendMessage;
 
-  const ChatBox({Key? key, required this.onSendMessage}) : super(key: key);
+  const ChatBox({super.key, required this.onSendMessage});
 
   @override
+  // ignore: library_private_types_in_public_api
   _ChatBoxState createState() => _ChatBoxState();
 }
 

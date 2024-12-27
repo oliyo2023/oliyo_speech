@@ -1,12 +1,19 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import '../utils/euum.dart';
+import '../utils/network_utils.dart';
 
 class BalanceController extends GetxController {
   var balance = ''.obs;
   var isLoading = false.obs;
 
-  Future<void> fetchBalance() async {
+  Future<void> fetchBalance(BuildContext context) async {
+    if (!await NetworkUtils.checkNetworkConnection()) {
+      NetworkUtils.showNetworkError(context);
+      return;
+    }
+
     isLoading.value = true;
     try {
       final dio = Dio();
@@ -18,7 +25,6 @@ class BalanceController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        print('API Response: ${response.data}'); // 打印API响应
         final balanceInfos = response.data['balance_infos'] as List;
         if (balanceInfos.isNotEmpty) {
           final cnyBalance = balanceInfos.firstWhere(
@@ -29,9 +35,21 @@ class BalanceController extends GetxController {
         } else {
           balance.value = '未知';
         }
+      } else {
+        Get.snackbar(
+          '错误',
+          '获取余额失败，请稍后重试',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
-      print('Error fetching balance: $e');
+      Get.snackbar(
+        '错误',
+        '网络请求异常：${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }

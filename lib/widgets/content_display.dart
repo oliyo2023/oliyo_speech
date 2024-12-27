@@ -4,8 +4,7 @@ class ContentDisplay extends StatelessWidget {
   final String content;
   final String? balance;
 
-  const ContentDisplay({Key? key, required this.content, this.balance})
-      : super(key: key);
+  const ContentDisplay({super.key, required this.content, this.balance});
 
   @override
   Widget build(BuildContext context) {

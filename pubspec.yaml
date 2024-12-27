@@ -22,6 +22,7 @@ dependencies:
   sqflite: ^2.4.1
   sqflite_common_ffi: any
   cached_network_image_platform_interface: ^4.1.1
+  connectivity_plus: ^6.1.1
 
 dev_dependencies:
   flutter_test:

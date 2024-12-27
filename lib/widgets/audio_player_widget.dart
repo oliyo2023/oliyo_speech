@@ -6,9 +6,10 @@ import 'package:path_provider/path_provider.dart';
 class AudioPlayerWidget extends StatefulWidget {
   final String audioUrl;
 
-  const AudioPlayerWidget({Key? key, required this.audioUrl}) : super(key: key);
+  const AudioPlayerWidget({super.key, required this.audioUrl});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AudioPlayerWidgetState createState() => _AudioPlayerWidgetState();
 }
 
@@ -51,10 +52,12 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
       await Dio().download(widget.audioUrl, filePath);
 
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('文件已下载到：$filePath')),
       );
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('下载失败：$e')),
       );
