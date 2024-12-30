@@ -9,12 +9,19 @@ class ModelController extends GetxController {
   var hasMore = true.obs;
   var searchQuery = '';
 
+  /// 初始化控制器时获取模型列表
+  ///
+  /// @return void 无返回值
   @override
   void onInit() {
     super.onInit();
     fetchModels();
   }
 
+  /// 获取模型列表
+  ///
+  /// @param name 可选参数，用于搜索模型名称
+  /// @return Future<void> 无返回值
   Future<void> fetchModels({String? name}) async {
     searchQuery = name ?? '';
     page = 1;
@@ -31,6 +38,9 @@ class ModelController extends GetxController {
     models.value = fetchedModels;
   }
 
+  /// 加载更多模型数据
+  ///
+  /// @return void 无返回值
   void loadMoreModels() async {
     if (hasMore.value) {
       page++;

@@ -6,10 +6,16 @@ class DioClient {
   static final DioClient _instance = DioClient._internal();
   late final Dio dio;
 
+  /// DioClient单例工厂构造函数
+  ///
+  /// @return DioClient实例
   factory DioClient() {
     return _instance;
   }
 
+  /// 初始化DioClient实例，配置Dio选项和拦截器
+  ///
+  /// @return void 无返回值
   DioClient._internal() {
     dio = Dio(BaseOptions(
       connectTimeout: ConfigService.apiTimeout,

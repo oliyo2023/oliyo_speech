@@ -9,12 +9,18 @@ class UserController extends GetxController {
 
   double get balance => _balance.value;
 
+  /// 初始化控制器时获取用户余额
+  ///
+  /// @return void 无返回值
   @override
   void onInit() {
     super.onInit();
     fetchBalance();
   }
 
+  /// 获取并更新用户余额
+  ///
+  /// @return Future<void> 无返回值
   Future<void> fetchBalance() async {
     try {
       final balance = await _balanceService.fetchUserBalance();

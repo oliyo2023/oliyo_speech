@@ -12,6 +12,10 @@ class ConfigService {
 
   static const Duration apiTimeout = Duration(seconds: 30);
 
+  /// 打印调试日志
+  ///
+  /// @param message 要打印的日志信息
+  /// @return void 无返回值
   static void log(String message) {
     if (kDebugMode) {
       print('[ConfigService] $message');

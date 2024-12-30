@@ -15,6 +15,10 @@ class ConversionController extends GetxController {
   final player = AudioPlayer();
   final PocketBaseService pocketBaseService = PocketBaseService();
 
+  /// 将文本转换为语音
+  /// 
+  /// @param request TtsRequest对象，包含要转换的文本和参考ID
+  /// @return Future<void> 无返回值
   Future<void> convertTextToSpeech(TtsRequest request) async {
     if (request.text.isNotEmpty && request.referenceId.isNotEmpty) {
       try {
@@ -37,6 +41,12 @@ class ConversionController extends GetxController {
     }
   }
 
+  /// 上传音频文件到PocketBase
+  ///
+  /// @param content 音频对应的文本内容
+  /// @param audioFile 要上传的音频文件
+  /// @param modelId 使用的模型ID
+  /// @return Future<void> 无返回值
   Future<void> uploadAudio(
       String content, File audioFile, String modelId) async {
     try {
@@ -59,6 +69,9 @@ class ConversionController extends GetxController {
     }
   }
 
+  /// 关闭控制器时释放资源
+  ///
+  /// @return void 无返回值
   @override
   void onClose() {
     player.dispose();

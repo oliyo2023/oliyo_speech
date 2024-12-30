@@ -11,10 +11,16 @@ class UserBalanceService {
 
   UserBalanceService(this.pb);
 
+  /// 获取用户余额
+  ///
+  /// @return Future<double> 用户余额
   Future<double> fetchUserBalance() async {
     return await fetchRemoteUserBalance();
   }
 
+  /// 从远程API获取用户余额
+  ///
+  /// @return Future<double> 远程API返回的用户余额
   Future<double> fetchRemoteUserBalance() async {
     var apiKey = await PocketBaseService().getApiKeys(Configure.FISH_AUDIO);
     ConfigService.log('API Key: $apiKey');

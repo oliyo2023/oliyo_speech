@@ -31,6 +31,10 @@ class TtsService {
   final PocketBaseService _pocketBaseService = PocketBaseService();
   final Map<String, Uint8List> _audioCache = {};
 
+  /// 将文本转换为语音
+  ///
+  /// @param request TtsRequest对象，包含要转换的文本和参数
+  /// @return Future<Uint8List> 转换后的音频数据
   Future<Uint8List> textToSpeech(TtsRequest request) async {
     final cacheKey = _generateCacheKey(request);
     if (_audioCache.containsKey(cacheKey)) {
@@ -60,10 +64,17 @@ class TtsService {
     }
   }
 
+  /// 生成缓存键
+  ///
+  /// @param request TtsRequest对象
+  /// @return String 缓存键
   String _generateCacheKey(TtsRequest request) {
     return '${request.text}_${request.referenceId}_${request.speechRate}_${request.volume}';
   }
 
+  /// 清除音频缓存
+  ///
+  /// @return void 无返回值
   void clearCache() {
     _audioCache.clear();
   }

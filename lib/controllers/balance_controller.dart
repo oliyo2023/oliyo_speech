@@ -10,6 +10,9 @@ class BalanceController extends GetxController {
   var isLoading = false.obs;
   final PocketBaseService _pocketBaseService = PocketBaseService();
 
+  /// 获取用户余额信息
+  ///
+  /// @return Future<void> 无返回值
   Future<void> fetchBalance() async {
     if (!await NetworkUtils.checkNetworkConnection()) {
       Get.snackbar(
