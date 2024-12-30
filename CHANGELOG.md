@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0] - 2024-01-01
+
+### Changed
+- 修改BalanceController以使用PocketBase获取deepseek_api_key
+- 移除无用的DEEPSEEK_API_KEY配置项
+
 ## [1.1.0] - 2024-01-01
 
 ### Added

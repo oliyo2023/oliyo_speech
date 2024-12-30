@@ -3,10 +3,12 @@ import 'package:get/get.dart';
 import 'package:dio/dio.dart';
 import '../utils/euum.dart';
 import '../utils/network_utils.dart';
+import '../services/pocketbase_service.dart';
 
 class BalanceController extends GetxController {
   var balance = ''.obs;
   var isLoading = false.obs;
+  final PocketBaseService _pocketBaseService = PocketBaseService();
 
   Future<void> fetchBalance() async {
     if (!await NetworkUtils.checkNetworkConnection()) {
@@ -22,10 +24,11 @@ class BalanceController extends GetxController {
     isLoading.value = true;
     try {
       final dio = Dio();
+      final deepseekApiKey = await _pocketBaseService.getApiKeys('deepseek');
       final response = await dio.get(
         Configure.DEEPSEEK_API_URL,
         options: Options(headers: {
-          'Authorization': 'Bearer ${Configure.DEEPSEEK_API_KEY}',
+          'Authorization': 'Bearer $deepseekApiKey',
         }),
       );
 
