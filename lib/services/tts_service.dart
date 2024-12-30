@@ -29,8 +29,14 @@ class TtsRequest {
 class TtsService {
   final Dio _dio = DioClient().dio;
   final PocketBaseService _pocketBaseService = PocketBaseService();
+  final Map<String, Uint8List> _audioCache = {};
 
   Future<Uint8List> textToSpeech(TtsRequest request) async {
+    final cacheKey = _generateCacheKey(request);
+    if (_audioCache.containsKey(cacheKey)) {
+      return _audioCache[cacheKey]!;
+    }
+
     try {
       final apiKey = await _pocketBaseService.getApiKeys('fishaudio');
 
@@ -45,10 +51,20 @@ class TtsService {
           responseType: ResponseType.bytes,
         ),
       );
+
+      _audioCache[cacheKey] = response.data;
       return response.data;
     } catch (e) {
       ConfigService.log('Error calling TTS API: $e');
       rethrow;
     }
+  }
+
+  String _generateCacheKey(TtsRequest request) {
+    return '${request.text}_${request.referenceId}_${request.speechRate}_${request.volume}';
+  }
+
+  void clearCache() {
+    _audioCache.clear();
   }
 }

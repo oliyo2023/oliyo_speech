@@ -8,19 +8,27 @@ import '../widgets/conversion_input.dart';
 import '../widgets/conversion_results.dart';
 import '../widgets/model_list.dart';
 
+class WindowConfig {
+  static const Size initialSize = Size(1280, 720);
+  static const String title = "Wegame";
+
+  static void configureWindow() {
+    doWhenWindowReady(() {
+      final win = appWindow;
+      win.minSize = initialSize;
+      win.size = initialSize;
+      win.alignment = Alignment.center;
+      win.title = title;
+      win.show();
+    });
+  }
+}
+
 void main() {
   Get.put(ModelController());
   Get.put(ConversionController());
   runApp(const MyApp());
-  doWhenWindowReady(() {
-    final win = appWindow;
-    const initialSize = Size(1280, 720);
-    win.minSize = initialSize;
-    win.size = initialSize;
-    win.alignment = Alignment.center;
-    win.title = "Wegame";
-    win.show();
-  });
+  WindowConfig.configureWindow();
 }
 
 class MyApp extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:wegame/services/config_service.dart';
 import 'package:wegame/services/user_balance_service.dart';
 import 'package:wegame/utils/euum.dart';
 
@@ -24,42 +25,55 @@ class PocketBaseService {
     return _instance!;
   }
 
-  Future<void> _authenticate() async {
-    try {
-      await _pb.collection('_superusers').authWithPassword(
-            'oliyo@qq.com',
-            'gemini4094',
-          );
-      if (kDebugMode) {
-        print('PocketBase authenticated successfully.');
+  Future<void> _authenticate({int retryCount = 3}) async {
+    for (var i = 0; i < retryCount; i++) {
+      try {
+        await _pb.collection('_superusers').authWithPassword(
+              'oliyo@qq.com',
+              'gemini4094',
+            );
+        if (kDebugMode) {
+          print('PocketBase authenticated successfully.');
+        }
+        return;
+      } catch (e) {
+        if (kDebugMode) {
+          print('PocketBase authentication attempt ${i + 1} failed: $e');
+        }
+        if (i == retryCount - 1) {
+          rethrow;
+        }
+        await Future.delayed(const Duration(seconds: 2));
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print('PocketBase authentication failed: $e');
-      }
-      // Handle authentication failure appropriately (e.g., show an error message)
     }
   }
 
   Future<List<RecordModel>> getModelsByName(String name,
       {int? page, int? perPage}) async {
-    final records = await pb.collection('fish_models').getList(
-          filter: 'name~"$name"',
-          page: page!,
-          perPage: perPage ?? 15,
-        );
-    return records.items;
+    try {
+      final records = await pb.collection('fish_models').getList(
+            filter: 'name~"$name"',
+            page: page!,
+            perPage: perPage ?? 15,
+          );
+      return records.items;
+    } catch (e) {
+      ConfigService.log('Error fetching models: $e');
+      rethrow;
+    }
   }
 
   Future<String> getApiKeys(String platform) async {
-    var apiKey = "";
-    final records = await pb
-        .collection('keys')
-        .getList(filter: 'platform = "$platform"', perPage: 1, skipTotal: true);
-    if (records.items.isNotEmpty) {
-      final apiKeyRecord = records.items.first;
-      apiKey = apiKeyRecord.data['api_key'];
+    try {
+      final records = await pb.collection('keys').getList(
+          filter: 'platform = "$platform"', perPage: 1, skipTotal: true);
+      if (records.items.isNotEmpty) {
+        return records.items.first.data['api_key'];
+      }
+      throw Exception('API key not found for platform: $platform');
+    } catch (e) {
+      ConfigService.log('Error fetching API key: $e');
+      rethrow;
     }
-    return apiKey;
   }
 }
