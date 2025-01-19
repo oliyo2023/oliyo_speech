@@ -20,7 +20,7 @@ class PocketBaseService {
   /// 初始化PocketBaseService实例
   ///
   /// @return void 无返回值
-  PocketBaseService._internal();
+  PocketBaseService._internalInit();
 
   late final PocketBase _pb = PocketBase(Configure.PB_ENDPOINT);
   late final UserBalanceService userBalanceService = UserBalanceService(_pb);
